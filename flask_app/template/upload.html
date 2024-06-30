@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Image</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Upload Image</h1>
+        <form id="upload-form" action="/upload" method="POST" enctype="multipart/form-data">
+            <input type="file" name="file" id="file-upload" accept="image/*" required>
+            <button type="submit">Upload</button>
+        </form>
+        <div id="message"></div>
+    </div>
+    <script>
+        document.getElementById('file-upload').addEventListener('change', function() {
+            var file = this.files[0];
+            var fileType = file.type.split('/')[0];
+            if (fileType !== 'image') {
+                showMessage('Please select an image file.', 'error');
+                this.value = '';
+            }
+        });
+
+        // Function to display messages
+        function showMessage(message, type) {
+            var messageDiv = document.getElementById('message');
+            messageDiv.innerHTML = '<div class="' + type + '">' + message + '</div>';
+        }
+
+        // Example of fetching data that requires authentication (JWT token)
+        fetch('/upload', {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('jwt_token')
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log(data);
+            // Handle response as needed
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showMessage('Error: ' + error.message, 'error');
+        });
+    </script>
+</body>
+</html>
